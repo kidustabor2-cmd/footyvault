@@ -59,7 +59,35 @@ footer{border-top:1px solid #ffffff12;padding:28px 0;color:var(--muted);font-siz
 <div class="modalback" id="modal" role="dialog" aria-modal="true"><div class="modal"><button class="close" onclick="closeModal()" aria-label="Close">×</button><div class="eyebrow">FOOTYVAULT PREVIEW</div><h3 id="modalTitle">Product preview</h3><p id="modalText">This is a demo website. Product downloads and checkout are not active yet.</p><button class="btn" onclick="closeModal()">Got it</button></div></div>
 <script>
 function showDemo(name){document.getElementById('modalTitle').textContent=name;document.getElementById('modalText').textContent='This is a product concept preview. The real downloadable file and checkout still need to be created and connected.';document.getElementById('modal').style.display='flex'}
-function showPlan(name){document.getElementById('modalTitle').textContent=name;document.getElementById('modalText').textContent='Membership sign-up is not live yet. This demo will not collect your details or charge you.';document.getElementById('modal').style.display='flex'}
+async function showPlan(name) {
+  const title = document.getElementById('modalTitle');
+  const message = document.getElementById('modalText');
+  const modal = document.getElementById('modal');
+
+  title.textContent = name;
+  message.textContent = 'Connecting to secure Sandbox checkout...';
+  modal.style.display = 'flex';
+
+  try {
+    const { data, error } = await fvClient.functions.invoke(
+      'create-subscription'
+    );
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!data?.success || !data?.approval_url) {
+      throw new Error(data?.error || 'Could not start checkout.');
+    }
+
+    window.location.href = data.approval_url;
+
+  } catch (error) {
+    message.textContent =
+      error.message || 'Checkout failed. Please try again.';
+  }
+}
 function closeModal(){document.getElementById('modal').style.display='none'}
 document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
