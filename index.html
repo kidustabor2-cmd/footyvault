@@ -64,4 +64,57 @@ function closeModal(){document.getElementById('modal').style.display='none'}
 document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 </script>
+<!-- FOOTYVAULT ACCOUNT SYSTEM -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<div style="max-width:500px;margin:40px auto;padding:25px;background:#101a2b;border:1px solid #24344c;border-radius:16px;color:white;font-family:Arial">
+  <h2>FOOTYVAULT Account</h2>
+  <p style="color:#9cabc3">Create an account or sign in.</p>
+
+  <input id="fvEmail" type="email" placeholder="Email"
+    style="width:100%;padding:13px;margin:8px 0;background:#080d18;color:white;border:1px solid #24344c;border-radius:8px">
+
+  <input id="fvPassword" type="password" placeholder="Password"
+    style="width:100%;padding:13px;margin:8px 0;background:#080d18;color:white;border:1px solid #24344c;border-radius:8px">
+
+  <button onclick="fvSignUp()" style="padding:12px;margin:8px 5px 8px 0;cursor:pointer">Create account</button>
+  <button onclick="fvSignIn()" style="padding:12px;cursor:pointer">Sign in</button>
+  <p id="fvMessage" style="color:#35d7d0"></p>
+</div>
+
+<script>
+const FV_URL = "https://jzgcidcuofxzfkjtpsae.supabase.co";
+const FV_KEY = "sb_publishable_n7sCXKnviwFqHMpTdeiIsg_mL2JV0nl";
+
+const fvClient = supabase.createClient(FV_URL, FV_KEY);
+
+async function fvSignUp() {
+  const email = document.getElementById("fvEmail").value;
+  const password = document.getElementById("fvPassword").value;
+
+  const { error } = await fvClient.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: "https://kidustabor2-cmd.github.io/footyvault/"
+    }
+  });
+
+  document.getElementById("fvMessage").textContent =
+    error ? error.message : "Check your email to confirm your account!";
+}
+
+async function fvSignIn() {
+  const email = document.getElementById("fvEmail").value;
+  const password = document.getElementById("fvPassword").value;
+
+  const { error } = await fvClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  document.getElementById("fvMessage").textContent =
+    error ? error.message : "You're signed in!";
+}
+</script>
 </body></html>
